@@ -29,7 +29,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": [],
+            "scripts": [
+              "node_modules/paperjs/dist/paper-full.js"
+            ],
             "es5BrowserSupport": true
           },
           "configurations": {
@@ -86,7 +88,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": [],
+            "scripts": [
+              "node_modules/paperjs/dist/paper-full.js"
+            ],
             "assets": [
               "src/favicon.ico",
               "src/assets"
