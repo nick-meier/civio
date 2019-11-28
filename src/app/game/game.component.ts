@@ -7,7 +7,7 @@ import { PaperScope, Project, Path, Color, Point } from 'paper';
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements AfterViewInit {
-  @ViewChild("paperCanvas") canvasElement: ElementRef;
+  @ViewChild("paperCanvas", { static: false }) canvasElement: ElementRef;
 
   private scope: PaperScope;
   private project: Project;
