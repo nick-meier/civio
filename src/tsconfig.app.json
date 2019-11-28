@@ -5,7 +5,6 @@
     "types": []
   },
   "files": [
-    "../src/assets/paperjs/dist/paper.d.ts",
     "./main.ts",
     "./polyfills.ts"
   ],
