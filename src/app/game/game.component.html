@@ -1,1 +1,3 @@
-<canvas #paperCanvas style="width:100%; height:100%"></canvas>
+<div style="overflow: scroll; width: 100%; height: 100%;" (scroll)="canvasScroll($event)">
+  <canvas #paperCanvas style="width:2048px; height:2048px"></canvas>
+</div>
