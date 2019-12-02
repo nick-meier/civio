@@ -13,6 +13,51 @@ class Tile {
   // path: Path;
 
   hasBuilding: boolean;
+
+  lines: Path[];
+
+  canvasPoints: Point[];
+
+  createVisuals(radius: number, texturePath: string) {
+    this.canvasPoints = [];
+    const angle = ((2 * Math.PI) / 6);
+    // Generating the initial point as the final point
+    for (let i = 0; i <= 6; i++) {
+      const point = new Point(radius * Math.sin(angle * i), radius * Math.cos(angle * i));
+      this.canvasPoints.push(point);
+    }
+    this.createTexturedHexagon(texturePath);
+  }
+
+  createTexturedHexagon(imgPath: string): Group {
+    const clippingGroup = new Group();
+    clippingGroup.clipped = true;
+    const hexagon = this.createHexagon();
+    hexagon.clipMask = true;
+    clippingGroup.addChild(hexagon);
+    const raster = new Raster(imgPath);
+    clippingGroup.addChild(raster);
+
+    const pathBounds = hexagon.bounds;
+    const rasterBounds = raster.bounds;
+    const widthRatio = rasterBounds.x / pathBounds.x;
+    const heightRatio = rasterBounds.y / pathBounds.y;
+    const scaleFactor = 1 / Math.min(widthRatio, heightRatio);
+    raster.scale(scaleFactor);
+
+    this.group = clippingGroup;
+
+    return clippingGroup;
+  }
+
+  createHexagon(): Path {
+    const hexagon = new Path();
+    hexagon.strokeColor = new Color(0, 0, 0);
+    this.canvasPoints.forEach(point => {
+      hexagon.add(point);
+    });
+    return hexagon;
+  }
 }
 
 @Component({
@@ -21,7 +66,7 @@ class Tile {
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements AfterViewInit {
-  @ViewChild("paperCanvas", { static: false }) canvasElement: ElementRef;
+  @ViewChild('paperCanvas', { static: false }) canvasElement: ElementRef;
 
   private scope: PaperScope;
   private project: Project;
@@ -41,7 +86,9 @@ export class GameComponent implements AfterViewInit {
     this.createTiles(rows, columns);
     this.createHexagonGrid(this.tiles);
 
-    const colors: Color[] = []
+    this.players = [];
+
+    const colors: Color[] = [];
     for (let i = 0; i < 360; i += 10) {
       const color = new Color(255, 255, 255);
       color.hue = i;
@@ -59,6 +106,7 @@ export class GameComponent implements AfterViewInit {
       player.color = randomColor;
       const emptyTile = this.getEmptyTile();
       this.createCity(player, this.getEmptyTile());
+      this.players.push(player);
     }
 
   }
@@ -72,10 +120,11 @@ export class GameComponent implements AfterViewInit {
   getEmptyTile(): Tile {
     const indexList = [...this.range(0, this.allTiles.length - 1)];
     this.shuffleArray(indexList);
+
     for (let i = 0; i < indexList.length; i++) {
       const tile = this.allTiles[indexList[i]];
       if (tile.hasBuilding) continue;
-      if (tile.neighbors.find((tile) => tile.hasBuilding)) continue;
+      if (tile.neighbors.find((neighbor) => tile.hasBuilding)) continue;
       return tile;
     }
     return null;
@@ -150,18 +199,20 @@ export class GameComponent implements AfterViewInit {
     const forestImages = [
       'assets/images/unlicensed/m11-247-forest.png',
       'assets/images/unlicensed/ddg-44-forest.png'
-    ]
+    ];
     const mapGroup = new Group();
     for (let i = 0; i < columns; i++) {
       for (let j = 0; j < rows; j++) {
+        const tile = this.tiles[j][i];
         const forestImagePath = forestImages[Math.floor(Math.random() * forestImages.length)];
-        const hexagon = this.createTexturedHexagon(forestImagePath, hexSize);
+        tile.createVisuals(hexSize, forestImagePath);
+        // const hexagon = tile.createTexturedHexagon(forestImagePath);
+        const hexagon = tile.group;
         // const hexagon = this.createHexagon(hexSize);
-        this.tiles[j][i].group = hexagon;
         const offset = new Point(
-          xOffset * i + ((j % 2 == 0) ? xOffset / 2 : 0),
+          xOffset * i + ((j % 2 === 0) ? xOffset / 2 : 0),
           yOffset * j
-        )
+        );
         hexagon.translate(offset);
         // hexagon.position.x = xOffset * i;
         // if (j % 2 == 0) {
@@ -174,35 +225,6 @@ export class GameComponent implements AfterViewInit {
     }
     mapGroup.translate(new Point(25 * Math.sqrt(3), 50));
     this.project.activeLayer.addChild(mapGroup);
-  }
-
-  createTexturedHexagon(imgPath: string, hexSize: number): Group {
-    const clippingGroup = new Group();
-    clippingGroup.clipped = true;
-    const hexagon = this.createHexagon(hexSize);
-    hexagon.clipMask = true;
-    clippingGroup.addChild(hexagon);
-    const raster = new Raster(imgPath);
-    clippingGroup.addChild(raster);
-
-    const pathBounds = hexagon.bounds;
-    const rasterBounds = raster.bounds;
-    const widthRatio = rasterBounds.x / pathBounds.x;
-    const heightRatio = rasterBounds.y / pathBounds.y;
-    const scaleFactor = 1 / Math.min(widthRatio, heightRatio);
-    raster.scale(scaleFactor);
-
-    return clippingGroup;
-  }
-
-  createHexagon(radius: number): Path {
-    const hexagon = new Path();
-    hexagon.strokeColor = new Color(0, 0, 0);
-    const angle = ((2 * Math.PI) / 6);
-    for (let i = 0; i <= 6; i++) {
-      hexagon.add(new Point(radius * Math.sin(angle * i), radius * Math.cos(angle * i)))
-    }
-    return hexagon;
   }
 
   createCity(player: Player, tile: Tile) {
@@ -232,8 +254,7 @@ export class GameComponent implements AfterViewInit {
   }
 
   canvasScroll(event) {
-    event.preventDefault();
-    console.log('test', event);
+    // event.preventDefault();
   }
 
   // resizeCanvas() {
