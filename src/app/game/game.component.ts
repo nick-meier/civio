@@ -150,8 +150,6 @@ export class GameComponent implements AfterViewInit {
       this.createCity(player, this.getEmptyTile());
       this.players.push(player);
     }
-
-    console.log('project', this.project);
   }
 
   *range(start: number, end: number): IterableIterator<number> {
@@ -227,7 +225,6 @@ export class GameComponent implements AfterViewInit {
         // }
       }
     }
-    console.log(this.tiles);
   }
 
   // create grid give then tile data map????
@@ -268,7 +265,6 @@ export class GameComponent implements AfterViewInit {
       }
     }
     mapGroup.translate(mapOffset);
-    console.log('mapGroup', mapGroup);
     this.project.activeLayer.addChild(mapGroup);
   }
 
