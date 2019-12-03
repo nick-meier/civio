@@ -1,5 +1,6 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { PaperScope, Project, Path, Color, Point, Item, Group, Raster, Size, Layer } from 'paper';
+import { shuffleArray } from '../classes/utility';
 
 class Player {
   color: Color;
@@ -172,7 +173,7 @@ export class GameComponent implements AfterViewInit {
 
   getEmptyTile(): Tile {
     const indexList = [...this.range(0, this.allTiles.length - 1)];
-    this.shuffleArray(indexList);
+    shuffleArray(indexList);
 
     for (let i = 0; i < indexList.length; i++) {
       const tile = this.allTiles[indexList[i]];
@@ -294,16 +295,6 @@ export class GameComponent implements AfterViewInit {
       this.buildingGroup.addChild(item);
     });
 
-  }
-
-  // Fisher-Yates shuffle
-  shuffleArray<T>(array: Array<T>) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.round(Math.random() * i);
-      const item = array[i];
-      array[i] = array[j];
-      array[j] = item;
-    }
   }
 
   canvasScroll(event) {
