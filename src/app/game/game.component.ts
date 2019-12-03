@@ -19,7 +19,7 @@ class Tile {
   canvasPoints: Point[];
   innerPoints: Point[];
 
-  createVisuals(radius: number, position: Point, texturePath: string, outlineLayer: Layer) {
+  createVisuals(radius: number, position: Point, texturePath: string, outlineGroup: Group, tileGroup: Group) {
     this.canvasPoints = [];
     this.innerPoints = [];
     const angle = ((2 * Math.PI) / 6);
@@ -30,12 +30,14 @@ class Tile {
       this.canvasPoints.push(point);
       this.innerPoints.push(innerPoint);
     }
-    this.createTexturedHexagon(texturePath);
-    this.createOutlines(outlineLayer, position);
+    const hexagon = this.createTexturedHexagon(texturePath);
+    tileGroup.addChild(hexagon);
+    this.createOutlines(outlineGroup, position);
   }
 
   createTexturedHexagon(imgPath: string): Group {
     const clippingGroup = new Group();
+    clippingGroup.name = 'Texture Clip';
     clippingGroup.clipped = true;
     const hexagon = this.createHexagon();
     hexagon.clipMask = true;
@@ -64,9 +66,10 @@ class Tile {
     return hexagon;
   }
 
-  createOutlines(outlineLayer: Layer, position: Point) {
+  createOutlines(outlinesGroup: Group, position: Point) {
     const outlineGroup = new Group();
-    outlineLayer.addChild(outlineGroup);
+    outlineGroup.name = 'Outline';
+    outlinesGroup.addChild(outlineGroup);
     for (let i = 0; i < 6; i++) {
       const outlinePoints = [
         this.canvasPoints[i],
@@ -76,10 +79,9 @@ class Tile {
         this.canvasPoints[i]
       ];
       const outline = new Path(outlinePoints);
-      outlineLayer.addChild(outline);
+      outlineGroup.addChild(outline);
       outline.visible = false;
       // outline.fillColor = new Color(.7, .8, .9);
-      outlineGroup.addChild(outline);
     }
     outlineGroup.position = position;
     this.outline = outlineGroup;
@@ -104,8 +106,9 @@ export class GameComponent implements AfterViewInit {
   private scope: PaperScope;
   private project: Project;
   private mapLayer: Layer;
-  private outlineLayer: Layer;
-  private buildingLayer: Layer;
+  private tileGroup: Group;
+  private outlineGroup: Group;
+  private buildingGroup: Group;
 
   private allTiles: Tile[];
   private tiles: Tile[][];
@@ -117,11 +120,13 @@ export class GameComponent implements AfterViewInit {
     this.scope = new PaperScope();
     this.project = new Project(this.canvasElement.nativeElement);
     this.mapLayer = new Layer();
-    this.outlineLayer = new Layer();
-    this.buildingLayer = new Layer();
     this.project.addLayer(this.mapLayer);
-    this.project.addLayer(this.outlineLayer);
-    this.project.addLayer(this.buildingLayer);
+    this.tileGroup = new Group();
+    this.tileGroup.name = 'Tiles';
+    this.outlineGroup = new Group();
+    this.outlineGroup.name = 'Outlines';
+    this.buildingGroup = new Group();
+    this.buildingGroup.name = 'Buildings';
 
     const rows = 18;
     const columns = 23;
@@ -150,6 +155,7 @@ export class GameComponent implements AfterViewInit {
       this.createCity(player, this.getEmptyTile());
       this.players.push(player);
     }
+    console.log('project', this.project);
   }
 
   *range(start: number, end: number): IterableIterator<number> {
@@ -240,8 +246,8 @@ export class GameComponent implements AfterViewInit {
       'assets/images/unlicensed/m11-247-forest.png',
       'assets/images/unlicensed/ddg-44-forest.png'
     ];
-    const mapGroup = new Group();
     const mapOffset = new Point(25 * Math.sqrt(3), 50);
+
     for (let i = 0; i < columns; i++) {
       for (let j = 0; j < rows; j++) {
         const tile = this.tiles[j][i];
@@ -252,20 +258,18 @@ export class GameComponent implements AfterViewInit {
           xOffset * i + ((j % 2 === 0) ? xOffset / 2 : 0),
           yOffset * j
         );
-        tile.createVisuals(hexSize, mapOffset.add(offset), forestImagePath, this.outlineLayer);
+        tile.createVisuals(hexSize, mapOffset.add(offset), forestImagePath, this.outlineGroup, this.tileGroup);
         const hexagon = tile.group;
-        hexagon.translate(offset);
+        hexagon.translate(offset.add(mapOffset));
         // hexagon.position.x = xOffset * i;
         // if (j % 2 == 0) {
         //   hexagon.position.x += xOffset / 2;
         // }
         // hexagon.position.y = yOffset * j;
         // hexagon.fillColor = new Color(Math.random(), Math.random(), Math.random())
-        mapGroup.addChild(hexagon);
+        this.tileGroup.addChild(hexagon);
       }
     }
-    mapGroup.translate(mapOffset);
-    this.project.activeLayer.addChild(mapGroup);
   }
 
   createCity(player: Player, tile: Tile) {
@@ -281,6 +285,7 @@ export class GameComponent implements AfterViewInit {
       // item.fillColor = new Color(1, 1, 1);
       // item.strokeColor = new Color(0, 0, 0);
       // item.strokeWidth = .2;
+      this.buildingGroup.addChild(item);
     });
 
   }
