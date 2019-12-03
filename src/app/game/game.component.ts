@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { PaperScope, Project, Path, Color, Point, Item, Group, Raster, Size, Layer } from 'paper';
-import { shuffleArray } from '../classes/utility';
+import { shuffleArray, range } from '../classes/utility';
 
 class Player {
   color: Color;
@@ -165,14 +165,8 @@ export class GameComponent implements AfterViewInit {
     console.log('project', this.project);
   }
 
-  *range(start: number, end: number): IterableIterator<number> {
-    for (let i = start; i <= end; i++) {
-      yield i;
-    }
-  }
-
   getEmptyTile(): Tile {
-    const indexList = [...this.range(0, this.allTiles.length - 1)];
+    const indexList = [...range(0, this.allTiles.length - 1)];
     shuffleArray(indexList);
 
     for (let i = 0; i < indexList.length; i++) {
