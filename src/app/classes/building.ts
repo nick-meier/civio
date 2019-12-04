@@ -13,15 +13,22 @@ export class City extends Building {
     public productivity: number;
     public production: Production;
 
-    constructor(owner: Player) {
+    constructor(game: GameComponent, owner: Player, tile: Tile) {
         super();
+        this.game = game;
         this.owner = owner;
+        this.tile = tile;
     }
 
     produce() {
         if (this.production) {
             this.production.produce(this.productivity);
         }
+    }
+
+    startProduction(production: Production) {
+        if (this.production) return;
+        this.production = production;
     }
 
     spawnEngineer() {
@@ -40,11 +47,13 @@ abstract class Production {
 
     constructor(city: City) {
         this.forCity = city;
+        this.workDone = 0;
     }
 
     produce(productivity: number) {
         this.workDone += productivity;
         if (this.workDone >= this.workTotal) {
+            this.forCity.production = null;
             this.complete();
         }
     }
@@ -52,7 +61,12 @@ abstract class Production {
     abstract complete();
 }
 
-class EngineerProduction extends Production {
+export class EngineerProduction extends Production {
+    constructor(city: City) {
+        super(city);
+        this.workTotal = 10;
+    }
+
     complete() {
         this.forCity.spawnEngineer();
     }

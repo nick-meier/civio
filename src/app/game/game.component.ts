@@ -5,6 +5,7 @@ import { Engineer, Unit } from '../classes/unit';
 import { Player } from '../classes/player';
 import { Tile } from '../classes/tile';
 import { City } from '../classes/building';
+import { AI } from '../classes/ai';
 
 @Component({
   selector: 'app-game',
@@ -25,6 +26,7 @@ export class GameComponent implements AfterViewInit {
   private allTiles: Tile[];
   private tiles: Tile[][];
   private players: Player[];
+  private ais: AI[];
 
   private cities: City[];
 
@@ -56,6 +58,7 @@ export class GameComponent implements AfterViewInit {
     this.createHexagonGrid(this.tiles);
 
     this.players = [];
+    this.ais = [];
     this.cities = [];
 
     const colors: Color[] = [];
@@ -68,6 +71,8 @@ export class GameComponent implements AfterViewInit {
     }
     for (let i = 0; i < 20; i++) {
       const player = new Player();
+      const ai = new AI(player);
+      this.ais.push(ai);
       // const randomColorIndex = Math.floor(Math.random() * colors.length);
       // const randomColor = colors[randomColorIndex];
       // colors.splice(randomColorIndex, 1);
@@ -191,7 +196,8 @@ export class GameComponent implements AfterViewInit {
   }
 
   createCity(player: Player, tile: Tile) {
-    const city = new City(player);
+    const city = new City(this, player, tile);
+    player.cities.push(city);
     this.cities.push(city);
     city.productivity = 5;
 
@@ -235,6 +241,10 @@ export class GameComponent implements AfterViewInit {
     this.cities.forEach(city => {
       city.produce();
     });
+
+    this.ais.forEach(ai => {
+      ai.think();
+    })
   }
 
   createEngineer(owner: Player): Engineer {

@@ -8,6 +8,7 @@ export class Tile {
     group: Group;
     // path: Path;
   
+    biome: string;
     hasBuilding: boolean;
   
     outline: Group;
