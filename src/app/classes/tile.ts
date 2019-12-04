@@ -98,4 +98,8 @@ export class Tile {
       unit.tile = this;
       this.unit = unit;
     }
+
+    hasUnit(): boolean {
+        return Boolean(this.unit);
+    }
   }

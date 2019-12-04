@@ -4,6 +4,7 @@ import { shuffleArray, range } from '../classes/utility';
 import { Engineer, Unit } from '../classes/unit';
 import { Player } from '../classes/player';
 import { Tile } from '../classes/tile';
+import { City } from '../classes/building';
 
 @Component({
   selector: 'app-game',
@@ -24,6 +25,8 @@ export class GameComponent implements AfterViewInit {
   private allTiles: Tile[];
   private tiles: Tile[][];
   private players: Player[];
+
+  private cities: City[];
 
   constructor() { }
 
@@ -53,6 +56,7 @@ export class GameComponent implements AfterViewInit {
     this.createHexagonGrid(this.tiles);
 
     this.players = [];
+    this.cities = [];
 
     const colors: Color[] = [];
     for (let i = 0; i < 360; i += 10) {
@@ -76,6 +80,7 @@ export class GameComponent implements AfterViewInit {
     }
     this.createUnit(this.players[0], this.tiles[0][0], 'Engineer');
     console.log('project', this.project);
+    setInterval(this.gameLoop.bind(this), 1000);
   }
 
   getEmptyTile(): Tile {
@@ -186,6 +191,10 @@ export class GameComponent implements AfterViewInit {
   }
 
   createCity(player: Player, tile: Tile) {
+    const city = new City(player);
+    this.cities.push(city);
+    city.productivity = 5;
+
     tile.hasBuilding = true;
     tile.setOutlineColor(player.color);
     // (tile.group.children[1] as Raster).visible = false;
@@ -203,14 +212,13 @@ export class GameComponent implements AfterViewInit {
 
   }
 
-  createUnit(forPlayer: Player, onTile: Tile, named: string) {
+  createUnit(forPlayer: Player, onTile: Tile, named: string): Unit {
     let unit: Unit;
     if (named === 'Engineer') {
-      unit = new Engineer(this.project, this.unitGroup);
-      console.log('toast', unit);
-      unit.owner = forPlayer;
+      unit = this.createEngineer(forPlayer);
     }
     onTile.addUnit(unit);
+    return unit;
   }
 
   canvasScroll(event) {
@@ -223,4 +231,15 @@ export class GameComponent implements AfterViewInit {
   //   this.canvasElement.nativeElement.style = `transform: translate(${-imgWidth}px, 0)`;
   // }
 
+  gameLoop() {
+    this.cities.forEach(city => {
+      city.produce();
+    });
+  }
+
+  createEngineer(owner: Player): Engineer {
+    const engineer = new Engineer(this.project, this.unitGroup);
+    engineer.owner = owner;
+    return engineer;
+  }
 }
