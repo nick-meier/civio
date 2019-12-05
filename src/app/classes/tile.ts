@@ -17,6 +17,10 @@ export class Tile {
     innerPoints: Point[];
   
     private unit: Unit;
+
+    constructor(biome: string) {
+        this.biome = biome;
+    }
   
     createVisuals(radius: number, position: Point, texturePath: string, outlineGroup: Group, tileGroup: Group) {
       this.canvasPoints = [];

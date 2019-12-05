@@ -113,7 +113,12 @@ export class GameComponent implements AfterViewInit {
     for (let i = 0; i < rows; i++) {
       this.tiles[i] = [];
       for (let j = 0; j < columns; j++) {
-        const tile = new Tile();
+        let biome: string;
+        const r = Math.random();
+        if (r < 0.7) biome = 'Forest';
+        else if (r < 0.9) biome = 'Grass';
+        else biome = 'Desert';
+        const tile = new Tile(biome);
         tile.x = j;
         tile.y = i;
         tile.hasBuilding = false;
@@ -166,22 +171,36 @@ export class GameComponent implements AfterViewInit {
     const hexWidth = Math.sqrt(3) * hexSize;
     const xOffset = hexWidth;
     const forestImages = [
-      'assets/images/unlicensed/m11-247-forest.png',
-      'assets/images/unlicensed/ddg-44-forest.png'
+      'assets/images/unlicensed/biomes/forest/m11-247-forest.png',
+      'assets/images/unlicensed/biomes/forest/ddg-44-forest.png'
+    ];
+    const grassImages = [
+      'assets/images/unlicensed/biomes/grass/grass0.jpg',
+      'assets/images/unlicensed/biomes/grass/grass1.jpg',
+      'assets/images/unlicensed/biomes/grass/grass2.jpg'
+    ];
+    const desertImages = [
+      'assets/images/unlicensed/biomes/desert/desert0.png',
+      'assets/images/unlicensed/biomes/desert/desert1.jpg',
+      'assets/images/unlicensed/biomes/desert/Sea_of_Sand.jpg'
     ];
     const mapOffset = new Point(25 * Math.sqrt(3), 50);
 
     for (let i = 0; i < columns; i++) {
       for (let j = 0; j < rows; j++) {
         const tile = this.tiles[j][i];
-        const forestImagePath = forestImages[Math.floor(Math.random() * forestImages.length)];
+        let imageList;
+        if (tile.biome === 'Forest') imageList = forestImages;
+        else if (tile.biome === 'Grass') imageList = grassImages;
+        else if (tile.biome === 'Desert') imageList = desertImages;
+        const imagePath = imageList[Math.floor(Math.random() * imageList.length)];
         // const hexagon = tile.createTexturedHexagon(forestImagePath);
         // const hexagon = this.createHexagon(hexSize);
         const offset = new Point(
           xOffset * i + ((j % 2 === 0) ? xOffset / 2 : 0),
           yOffset * j
         );
-        tile.createVisuals(hexSize, mapOffset.add(offset), forestImagePath, this.outlineGroup, this.tileGroup);
+        tile.createVisuals(hexSize, mapOffset.add(offset), imagePath, this.outlineGroup, this.tileGroup);
         const hexagon = tile.group;
         hexagon.translate(offset.add(mapOffset));
         // hexagon.position.x = xOffset * i;
