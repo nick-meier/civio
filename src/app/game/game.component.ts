@@ -117,7 +117,8 @@ export class GameComponent implements AfterViewInit {
         const r = Math.random();
         if (r < 0.7) biome = 'Forest';
         else if (r < 0.9) biome = 'Grass';
-        else biome = 'Desert';
+        else if (r < 0.99) biome = 'Desert';
+        else biome = 'Mountain';
         const tile = new Tile(biome);
         tile.x = j;
         tile.y = i;
@@ -184,6 +185,10 @@ export class GameComponent implements AfterViewInit {
       'assets/images/unlicensed/biomes/desert/desert1.jpg',
       'assets/images/unlicensed/biomes/desert/Sea_of_Sand.jpg'
     ];
+    const mountainImages = [
+      'assets/images/unlicensed/biomes/mountain/mountain0.jpg',
+      'assets/images/unlicensed/biomes/mountain/mountain1.jpg'
+    ];
     const mapOffset = new Point(25 * Math.sqrt(3), 50);
 
     for (let i = 0; i < columns; i++) {
@@ -193,6 +198,7 @@ export class GameComponent implements AfterViewInit {
         if (tile.biome === 'Forest') imageList = forestImages;
         else if (tile.biome === 'Grass') imageList = grassImages;
         else if (tile.biome === 'Desert') imageList = desertImages;
+        else if (tile.biome === 'Mountain') imageList = mountainImages;
         const imagePath = imageList[Math.floor(Math.random() * imageList.length)];
         // const hexagon = tile.createTexturedHexagon(forestImagePath);
         // const hexagon = this.createHexagon(hexSize);
