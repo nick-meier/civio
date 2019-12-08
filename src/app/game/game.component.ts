@@ -20,7 +20,7 @@ export class GameComponent implements AfterViewInit {
   private mapLayer: Layer;
   private tileGroup: Group;
   private outlineGroup: Group;
-  private buildingGroup: Group;
+  public buildingGroup: Group;
   private unitGroup: Group;
 
   private allTiles: Tile[];
@@ -94,8 +94,8 @@ export class GameComponent implements AfterViewInit {
 
     for (let i = 0; i < indexList.length; i++) {
       const tile = this.allTiles[indexList[i]];
-      if (tile.hasBuilding) continue;
-      if (tile.neighbors.find((neighbor) => tile.hasBuilding)) continue;
+      if (tile.hasBuilding()) continue;
+      if (tile.neighbors.find((neighbor) => Boolean(neighbor) && neighbor.hasBuilding())) continue;
       return tile;
     }
     return null;
@@ -122,8 +122,6 @@ export class GameComponent implements AfterViewInit {
         const tile = new Tile(biome);
         tile.x = j;
         tile.y = i;
-        tile.hasBuilding = false;
-        tile.neighbors = [];
         this.tiles[i][j] = tile;
         this.allTiles.push(tile);
       }
@@ -140,20 +138,20 @@ export class GameComponent implements AfterViewInit {
         // Vertical neighbors
         const rowOffset = (i % 2 === 0) ? 1 : 0;
         if (i - 1 >= 0) {
-          if (j + rowOffset - 1 >= 0) this.tiles[i][j].neighbors.push(this.tiles[i - 1][j + rowOffset - 1]);
-          if (j + rowOffset < columns) this.tiles[i][j].neighbors.push(this.tiles[i - 1][j + rowOffset]);
+          if (j + rowOffset - 1 >= 0) this.tiles[i][j].neighbors[5] = this.tiles[i - 1][j + rowOffset - 1];
+          if (j + rowOffset < columns) this.tiles[i][j].neighbors[0] = this.tiles[i - 1][j + rowOffset];
         }
         if (i + 1 < rows) {
-          if (j + rowOffset - 1 >= 0) this.tiles[i][j].neighbors.push(this.tiles[i + 1][j + rowOffset - 1]);
-          if (j + rowOffset < columns) this.tiles[i][j].neighbors.push(this.tiles[i + 1][j + rowOffset]);
+          if (j + rowOffset - 1 >= 0) this.tiles[i][j].neighbors[3] = this.tiles[i + 1][j + rowOffset - 1];
+          if (j + rowOffset < columns) this.tiles[i][j].neighbors[2] = this.tiles[i + 1][j + rowOffset];
         }
 
         // Horizontal neighbors
         if (j - 1 >= 0) {
-          this.tiles[i][j].neighbors.push(this.tiles[i][j - 1]);
+          this.tiles[i][j].neighbors[4] = this.tiles[i][j - 1];
         }
         if (j + 1 < columns) {
-          this.tiles[i][j].neighbors.push(this.tiles[i][j + 1]);
+          this.tiles[i][j].neighbors[1] = this.tiles[i][j + 1];
         }
         // if (i + 1 < rows) {
         //   this.tiles[i][j].neighbors.push(this.tiles[i + 1][j]);
@@ -221,12 +219,12 @@ export class GameComponent implements AfterViewInit {
   }
 
   createCity(player: Player, tile: Tile) {
-    const city = new City(this, player, tile);
+    const city = new City(this, player);
     player.cities.push(city);
     this.cities.push(city);
     city.productivity = 5;
 
-    tile.hasBuilding = true;
+    tile.addBuilding(city);
     tile.setOutlineColor(player.color);
     // (tile.group.children[1] as Raster).visible = false;
     this.project.importSVG('assets/svg/city-svgrepo-com-filled.svg', (item: Item) => {
@@ -268,8 +266,8 @@ export class GameComponent implements AfterViewInit {
     });
 
     this.ais.forEach(ai => {
-      ai.think();
-    })
+      ai.think(this);
+    });
   }
 
   createEngineer(owner: Player): Engineer {
