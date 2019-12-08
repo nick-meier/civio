@@ -15,12 +15,8 @@ export abstract class Building {
 
 export class Road extends Building {
     private hub: Path;
-    private spoke0: Path;
-    private spoke1: Path;
-    private spoke2: Path;
-    private spoke3: Path;
-    private spoke4: Path;
-    private spoke5: Path;
+    private innerSpokes: Path[];
+    private outerSpokes: Path[];
 
     constructor(position: Point, buildingGroup: Group) {
         super();
@@ -29,70 +25,62 @@ export class Road extends Building {
         this.hub.strokeColor = new Color(0, 0, 0);
         buildingGroup.addChild(this.hub);
 
+        this.innerSpokes = [null, null, null, null, null, null];
+        this.outerSpokes = [null, null, null, null, null, null];
 
         const hexRadius = 50;
         const topLeftPoint = new Point(0, 0);
         const spokeSize = new Point(hexRadius / 2, hexRadius * Math.sqrt(3) / 2);
-        this.spoke0 = new Path.Rectangle(topLeftPoint, spokeSize);
-        const mapOffset = new Point(25 * Math.sqrt(3), 50);
-        // this.spoke0.translate(mapOffset);
-        // this.spoke0.translate(new Point(25 * Math.sqrt(3) - spokeSize.x / 2, 0));
-        this.spoke0.fillColor = new Color(1, 1, 1);
-        this.spoke0.strokeColor = new Color(0, 0, 0);
-        this.spoke0.visible = false;
+        const innerSpokeSize = new Point(spokeSize.x * .9, spokeSize.y);
+        this.outerSpokes[0] = new Path.Rectangle(topLeftPoint, spokeSize);
+        this.innerSpokes[0] = new Path.Rectangle(topLeftPoint, innerSpokeSize);
+        // const mapOffset = new Point(25 * Math.sqrt(3), 50);
+        // this.outerSpokes[0].translate(mapOffset);
+        // this.outerSpokes[0].translate(new Point(25 * Math.sqrt(3) - spokeSize.x / 2, 0));
+        this.outerSpokes[0].fillColor = new Color(0, 0, 0);
+        this.innerSpokes[0].fillColor = new Color(1, 1, 1);
+        // this.outerSpokes[0].strokeColor = new Color(0, 0, 0);
+        this.innerSpokes[0].visible = false;
+        this.outerSpokes[0].visible = false;
 
-        this.spoke1 = this.spoke0.clone() as Path;
-        this.spoke2 = this.spoke0.clone() as Path;
-        this.spoke3 = this.spoke0.clone() as Path;
-        this.spoke4 = this.spoke0.clone() as Path;
-        this.spoke5 = this.spoke0.clone() as Path;
+        for (let i = 1; i < 6; i++) {
+            this.outerSpokes[i] = (this.outerSpokes[0].clone() as Path);
+            this.innerSpokes[i] = this.innerSpokes[0].clone() as Path;
+        }
 
-        this.spoke0.rotate(210, this.spoke0.bounds.topCenter);
-        this.spoke1.rotate(270, this.spoke1.bounds.topCenter);
-        this.spoke2.rotate(330, this.spoke2.bounds.topCenter);
-        this.spoke3.rotate(30, this.spoke3.bounds.topCenter);
-        this.spoke4.rotate(90, this.spoke4.bounds.topCenter);
-        this.spoke5.rotate(150, this.spoke5.bounds.topCenter);
+        for (let i = 0; i < 6; i++) {
+            const rotationAmount = (210 + 60 * i) % 360;
+            this.outerSpokes[i].rotate(
+                rotationAmount,
+                this.outerSpokes[i].bounds.topCenter
+            );
+            this.innerSpokes[i].rotate(
+                rotationAmount,
+                this.innerSpokes[i].bounds.topCenter
+            );
+        }
 
-        buildingGroup.addChild(this.spoke0);
-        buildingGroup.addChild(this.spoke1);
-        buildingGroup.addChild(this.spoke2);
-        buildingGroup.addChild(this.spoke3);
-        buildingGroup.addChild(this.spoke4);
-        buildingGroup.addChild(this.spoke5);
+        buildingGroup.addChildren(this.outerSpokes);
+        buildingGroup.addChildren(this.innerSpokes);
     }
 
     onAddToTile(tile: Tile) {
         super.onAddToTile(tile);
 
-        this.spoke0.rotate(-210, this.spoke0.bounds.topCenter);
-        this.spoke1.rotate(-270, this.spoke1.bounds.topCenter);
-        this.spoke2.rotate(-330, this.spoke2.bounds.topCenter);
-        this.spoke3.rotate(-30, this.spoke3.bounds.topCenter);
-        this.spoke4.rotate(-90, this.spoke4.bounds.topCenter);
-        this.spoke5.rotate(-150, this.spoke5.bounds.topCenter);
-
         const newPosition = tile.group.bounds.center.subtract(new Point(0, - 50 * Math.sqrt(3) / 4));
-        this.spoke0.position = newPosition;
-        this.spoke1.position = newPosition;
-        this.spoke2.position = newPosition;
-        this.spoke3.position = newPosition;
-        this.spoke4.position = newPosition;
-        this.spoke5.position = newPosition;
-
-        this.spoke0.rotate(210, this.spoke0.bounds.topCenter);
-        this.spoke1.rotate(270, this.spoke1.bounds.topCenter);
-        this.spoke2.rotate(330, this.spoke2.bounds.topCenter);
-        this.spoke3.rotate(30, this.spoke3.bounds.topCenter);
-        this.spoke4.rotate(90, this.spoke4.bounds.topCenter);
-        this.spoke5.rotate(150, this.spoke5.bounds.topCenter);
-
-        if (Boolean(tile.neighbors[0]) && tile.neighbors[0].hasBuilding()) this.spoke0.visible = true;
-        if (Boolean(tile.neighbors[1]) && tile.neighbors[1].hasBuilding()) this.spoke1.visible = true;
-        if (Boolean(tile.neighbors[2]) && tile.neighbors[2].hasBuilding()) this.spoke2.visible = true;
-        if (Boolean(tile.neighbors[3]) && tile.neighbors[3].hasBuilding()) this.spoke3.visible = true;
-        if (Boolean(tile.neighbors[4]) && tile.neighbors[4].hasBuilding()) this.spoke4.visible = true;
-        if (Boolean(tile.neighbors[5]) && tile.neighbors[5].hasBuilding()) this.spoke5.visible = true;
+        for (let i = 0; i < 6; i++) {
+            const rotationAmount = (-210 - 60 * i) % 360;
+            this.outerSpokes[i].rotate(rotationAmount, this.outerSpokes[i].bounds.topCenter);
+            this.innerSpokes[i].rotate(rotationAmount, this.innerSpokes[i].bounds.topCenter);
+            this.outerSpokes[i].position = newPosition;
+            this.innerSpokes[i].position = newPosition;
+            this.outerSpokes[i].rotate((210 + 60 * i) % 360, this.outerSpokes[i].bounds.topCenter);
+            this.innerSpokes[i].rotate(-rotationAmount, this.innerSpokes[i].bounds.topCenter);
+            if (Boolean(tile.neighbors[i]) && tile.neighbors[i].hasBuilding()) {
+                this.outerSpokes[i].visible = true;
+                this.innerSpokes[i].visible = true;
+            }
+        }
     }
 }
 
