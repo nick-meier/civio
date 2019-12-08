@@ -18,7 +18,7 @@ export class AI {
         });
         this.player.engineers.forEach(engineer => {
             if (!engineer.tile.hasBuilding()) {
-                engineer.buildRoad(game.buildingGroup, engineer.tile);
+                engineer.buildRoad(game.buildingGroup, game.roadGroup, engineer.tile);
             }
         });
     }

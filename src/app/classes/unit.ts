@@ -1,7 +1,7 @@
 import { Player } from './player';
 import { Item, Project, Group, Color, Path } from 'paper';
 import { Tile } from './tile';
-import { Building, Road } from './building';
+import { Building, Road, RoadHub } from './building';
 
 export abstract class Unit {
     public owner: Player;
@@ -22,9 +22,9 @@ export class Engineer extends Unit {
         });
     }
 
-    buildRoad(buildingGroup: Group, tile: Tile) {
-        const road = new Road(tile.group.position, buildingGroup);
-        tile.addBuilding(road);
+    buildRoad(buildingGroup: Group, roadGroup: Group, tile: Tile) {
+        const road = new RoadHub(tile.group.position, buildingGroup);
+        tile.addBuilding(road, roadGroup);
     }
 }
 

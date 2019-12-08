@@ -13,24 +13,17 @@ export abstract class Building {
     }
 }
 
-export class Road extends Building {
-    private hub: Path;
+export class Road {
     private innerSpokes: Path[];
     private outerSpokes: Path[];
 
-    constructor(position: Point, buildingGroup: Group) {
-        super();
-        this.hub = new Path.Circle(position, 20);
-        this.hub.fillColor = new Color(1, 1, 1);
-        this.hub.strokeColor = new Color(0, 0, 0);
-        buildingGroup.addChild(this.hub);
-
+    constructor(roadGroup: Group, tile: Tile) {
         this.innerSpokes = [null, null, null, null, null, null];
         this.outerSpokes = [null, null, null, null, null, null];
 
         const hexRadius = 50;
         const topLeftPoint = new Point(0, 0);
-        const spokeSize = new Point(hexRadius / 2, hexRadius * Math.sqrt(3) / 2);
+        const spokeSize = new Point(hexRadius / 2 / 2, hexRadius * Math.sqrt(3) / 2);
         const innerSpokeSize = new Point(spokeSize.x * .9, spokeSize.y);
         this.outerSpokes[0] = new Path.Rectangle(topLeftPoint, spokeSize);
         this.innerSpokes[0] = new Path.Rectangle(topLeftPoint, innerSpokeSize);
@@ -48,8 +41,11 @@ export class Road extends Building {
             this.innerSpokes[i] = this.innerSpokes[0].clone() as Path;
         }
 
+        const spokePosition = tile.group.bounds.center.subtract(new Point(0, - 50 * Math.sqrt(3) / 4));
         for (let i = 0; i < 6; i++) {
             const rotationAmount = (210 + 60 * i) % 360;
+            this.outerSpokes[i].position = spokePosition;
+            this.innerSpokes[i].position = spokePosition;
             this.outerSpokes[i].rotate(
                 rotationAmount,
                 this.outerSpokes[i].bounds.topCenter
@@ -60,25 +56,35 @@ export class Road extends Building {
             );
         }
 
-        buildingGroup.addChildren(this.outerSpokes);
-        buildingGroup.addChildren(this.innerSpokes);
+        roadGroup.addChildren(this.outerSpokes);
+        roadGroup.addChildren(this.innerSpokes);
+    }
+
+    public toggleSpoke(index: number, visible: boolean) {
+        this.innerSpokes[index].visible = visible;
+        this.outerSpokes[index].visible = visible;
+    }
+}
+
+export class RoadHub extends Building {
+    private hub: Path;
+
+
+    constructor(position: Point, buildingGroup: Group) {
+        super();
+        this.hub = new Path.Circle(position, 20);
+        this.hub.fillColor = new Color(1, 1, 1);
+        this.hub.strokeColor = new Color(0, 0, 0);
+        buildingGroup.addChild(this.hub);
     }
 
     onAddToTile(tile: Tile) {
         super.onAddToTile(tile);
 
-        const newPosition = tile.group.bounds.center.subtract(new Point(0, - 50 * Math.sqrt(3) / 4));
         for (let i = 0; i < 6; i++) {
-            const rotationAmount = (-210 - 60 * i) % 360;
-            this.outerSpokes[i].rotate(rotationAmount, this.outerSpokes[i].bounds.topCenter);
-            this.innerSpokes[i].rotate(rotationAmount, this.innerSpokes[i].bounds.topCenter);
-            this.outerSpokes[i].position = newPosition;
-            this.innerSpokes[i].position = newPosition;
-            this.outerSpokes[i].rotate((210 + 60 * i) % 360, this.outerSpokes[i].bounds.topCenter);
-            this.innerSpokes[i].rotate(-rotationAmount, this.innerSpokes[i].bounds.topCenter);
             if (Boolean(tile.neighbors[i]) && tile.neighbors[i].hasBuilding()) {
-                this.outerSpokes[i].visible = true;
-                this.innerSpokes[i].visible = true;
+                tile.road.toggleSpoke(i, true);
+                tile.neighbors[i].road.toggleSpoke((i + 3) % 6, true);
             }
         }
     }

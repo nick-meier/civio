@@ -1,6 +1,6 @@
 import { Group, Point, Raster, Path, Color } from 'paper';
 import { Unit } from './unit';
-import { Building } from './building';
+import { Building, Road } from './building';
 
 export class Tile {
   x: number;
@@ -18,6 +18,7 @@ export class Tile {
 
   private unit: Unit;
   private building: Building;
+  public road: Road;
 
   constructor(biome: string) {
     this.biome = biome;
@@ -110,8 +111,12 @@ export class Tile {
     return Boolean(this.unit);
   }
 
-  addBuilding(building: Building) {
+  addBuilding(building: Building, roadGroup: Group) {
     if (this.building != null) return;
+
+    if (this.road == null) {
+      this.road = new Road(roadGroup, this);
+    }
 
     building.onAddToTile(this);
     this.building = building;
