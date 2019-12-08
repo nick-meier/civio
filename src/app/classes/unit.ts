@@ -23,7 +23,7 @@ export class Engineer extends Unit {
     }
 
     buildRoad(buildingGroup: Group, roadGroup: Group, tile: Tile) {
-        const road = new RoadHub(tile.group.position, buildingGroup);
+        const road = new RoadHub(this.owner, tile.group.position, buildingGroup);
         tile.addBuilding(road, roadGroup);
     }
 }

@@ -7,6 +7,10 @@ import { Point, Path, Color, Group, Item } from 'paper';
 export abstract class Building {
     protected tile: Tile;
     public owner: Player;
+    
+    constructor(owner: Player) {
+        this.owner = owner;
+    }
 
     onAddToTile(tile: Tile) {
         this.tile = tile;
@@ -70,8 +74,8 @@ export class RoadHub extends Building {
     private hub: Path;
 
 
-    constructor(position: Point, buildingGroup: Group) {
-        super();
+    constructor(owner: Player, position: Point, buildingGroup: Group) {
+        super(owner);
         this.hub = new Path.Circle(position, 20);
         this.hub.fillColor = new Color(1, 1, 1);
         this.hub.strokeColor = new Color(0, 0, 0);
@@ -82,7 +86,7 @@ export class RoadHub extends Building {
         super.onAddToTile(tile);
 
         for (let i = 0; i < 6; i++) {
-            if (Boolean(tile.neighbors[i]) && tile.neighbors[i].hasBuilding()) {
+            if (Boolean(tile.neighbors[i]) && tile.neighbors[i].hasBuilding() && tile.owner() === tile.neighbors[i].owner()) {
                 tile.road.toggleSpoke(i, true);
                 tile.neighbors[i].road.toggleSpoke((i + 3) % 6, true);
             }
@@ -95,10 +99,9 @@ export class City extends Building {
     public productivity: number;
     public production: Production;
 
-    constructor(game: GameComponent, owner: Player) {
-        super();
+    constructor(owner: Player, game: GameComponent) {
+        super(owner);
         this.game = game;
-        this.owner = owner;
     }
 
     produce() {

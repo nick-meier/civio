@@ -1,6 +1,7 @@
 import { Group, Point, Raster, Path, Color } from 'paper';
 import { Unit } from './unit';
 import { Building, Road } from './building';
+import { Player } from './player';
 
 export class Tile {
   x: number;
@@ -118,11 +119,15 @@ export class Tile {
       this.road = new Road(roadGroup, this);
     }
 
-    building.onAddToTile(this);
     this.building = building;
+    building.onAddToTile(this);
   }
 
   hasBuilding(): boolean {
     return Boolean(this.building);
+  }
+
+  owner(): Player {
+    return this.building.owner;
   }
 }

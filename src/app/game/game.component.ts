@@ -222,7 +222,7 @@ export class GameComponent implements AfterViewInit {
   }
 
   createCity(player: Player, tile: Tile) {
-    const city = new City(this, player);
+    const city = new City(player, this);
     player.cities.push(city);
     this.cities.push(city);
     city.productivity = 5;
