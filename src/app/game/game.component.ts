@@ -249,7 +249,7 @@ export class GameComponent implements AfterViewInit {
     if (named === 'Engineer') {
       unit = this.createEngineer(forPlayer);
     }
-    onTile.addUnit(unit);
+    unit.move(onTile);
     return unit;
   }
 

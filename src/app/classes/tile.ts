@@ -104,8 +104,22 @@ export class Tile {
   addUnit(unit: Unit) {
     if (this.unit != null) return;
 
+    if (unit.icon) {
+      unit.icon.position = this.group.position;
+      unit.icon.visible = true;
+    }
     unit.tile = this;
     this.unit = unit;
+  }
+
+  removeUnit(unit: Unit) {
+    if (!this.unit) return;
+
+    if (unit.icon) {
+      unit.icon.visible = false;
+    }
+    unit.tile = null;
+    this.unit = null;
   }
 
   hasUnit(): boolean {

@@ -16,9 +16,12 @@ export class AI {
                 city.startProduction(new EngineerProduction(city));
             }
         });
+        let tile = null;
         this.player.engineers.forEach(engineer => {
             if (!engineer.tile.hasBuilding()) {
                 engineer.buildRoad(game.buildingGroup, game.roadGroup, engineer.tile);
+            } else if (tile = engineer.tile.neighbors.find(neighbor => neighbor && !neighbor.hasUnit())) {
+                engineer.move(tile);
             }
         });
     }

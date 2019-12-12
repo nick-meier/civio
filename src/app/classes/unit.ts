@@ -1,12 +1,17 @@
 import { Player } from './player';
-import { Item, Project, Group, Color, Path } from 'paper';
+import { Item, Project, Group } from 'paper';
 import { Tile } from './tile';
-import { Building, Road, RoadHub } from './building';
+import { RoadHub } from './building';
 
 export abstract class Unit {
     public owner: Player;
     public icon: Item;
     public tile: Tile;
+
+    move(tile: Tile) {
+        if (this.tile) this.tile.removeUnit(this);
+        tile.addUnit(this);
+    }
 }
 
 export class Engineer extends Unit {

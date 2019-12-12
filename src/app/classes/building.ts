@@ -7,7 +7,7 @@ import { Point, Path, Color, Group, Item } from 'paper';
 export abstract class Building {
     protected tile: Tile;
     public owner: Player;
-    
+
     constructor(owner: Player) {
         this.owner = owner;
     }
@@ -119,7 +119,7 @@ export class City extends Building {
         const emptyTile = (this.tile.hasUnit() ? this.tile.neighbors.find(tile => Boolean(tile) && !tile.hasUnit()) : this.tile);
         if (emptyTile) {
             const engineer = this.game.createEngineer(this.owner);
-            emptyTile.addUnit(engineer);
+            engineer.move(emptyTile);
             return engineer;
         }
         return null;
