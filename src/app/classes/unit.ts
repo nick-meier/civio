@@ -7,16 +7,30 @@ export abstract class Unit {
     public owner: Player;
     public icon: Item;
     public tile: Tile;
+    public upkeepCost: number;
 
     move(tile: Tile) {
         if (this.tile) this.tile.removeUnit(this);
         tile.addUnit(this);
+    }
+
+    destroy() {
+        console.log('DESTROYYYY');
+
+        if (this.tile) this.tile.removeUnit(this);
+        const index = this.owner.units.indexOf(this);
+        if (this.owner) {
+            this.owner.units.splice(index, 1);
+        }
+        // this.icon.parent = null;
     }
 }
 
 export class Engineer extends Unit {
     constructor(project: Project, unitGroup: Group) {
         super();
+        this.upkeepCost = 10;
+
         project.importSVG('assets/svg/unlicensed/Engineering.svg', (item: Item) => {
             this.icon = item;
             item.scale(2.5);

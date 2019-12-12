@@ -89,6 +89,7 @@ export class GameComponent implements AfterViewInit {
     this.createUnit(this.players[0], this.tiles[0][0], 'Engineer');
     console.log('project', this.project);
     setInterval(this.gameLoop.bind(this), 1000);
+    setInterval(this.upkeepLoop.bind(this), 10000);
   }
 
   getEmptyTile(): Tile {
@@ -270,6 +271,12 @@ export class GameComponent implements AfterViewInit {
 
     this.ais.forEach(ai => {
       ai.think(this);
+    });
+  }
+
+  upkeepLoop() {
+    this.players.forEach(player => {
+      player.upkeep();
     });
   }
 

@@ -157,7 +157,7 @@ export class EngineerProduction extends Production {
         const engineer = this.forCity.spawnEngineer();
         if (engineer) {
             engineer.owner = this.forCity.owner;
-            this.forCity.owner.engineers.push(engineer);
+            this.forCity.owner.units.push(engineer);
         }
     }
 }
