@@ -22,7 +22,7 @@ export class AI {
             if (unit instanceof Engineer) {
                 const engineer = unit as Engineer;
                 if (!engineer.tile.hasBuilding()) {
-                    engineer.buildRoad(game.buildingGroup, game.roadGroup, engineer.tile);
+                    engineer.buildRoad(game.roadHubGroup, game.roadInnerGroup, game.roadOuterGroup, engineer.tile);
                 } else if (tile = engineer.tile.neighbors.find(neighbor => neighbor && !neighbor.hasUnit())) {
                     engineer.move(tile);
                 }

@@ -126,11 +126,11 @@ export class Tile {
     return Boolean(this.unit);
   }
 
-  addBuilding(building: Building, roadGroup: Group) {
+  addBuilding(building: Building, roadInnerGroup: Group, roadOuterGroup) {
     if (this.building != null) return;
 
     if (this.road == null) {
-      this.road = new Road(roadGroup, this);
+      this.road = new Road(roadInnerGroup, roadOuterGroup, this);
     }
 
     this.building = building;

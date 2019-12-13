@@ -15,7 +15,8 @@ export class Player {
     }
 
     upkeep() {
-        this.units.forEach(unit => {
+        const unitsCopy = this.units.slice(0);
+        unitsCopy.forEach(unit => {
             if (unit.upkeepCost > this.productivity) {
                 unit.destroy();
             } else {

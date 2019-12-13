@@ -20,7 +20,9 @@ export class GameComponent implements AfterViewInit {
   private mapLayer: Layer;
   private tileGroup: Group;
   private outlineGroup: Group;
-  public roadGroup: Group;
+  public roadHubGroup: Group;
+  public roadOuterGroup: Group;
+  public roadInnerGroup: Group;
   public buildingGroup: Group;
   private unitGroup: Group;
 
@@ -48,8 +50,12 @@ export class GameComponent implements AfterViewInit {
     this.tileGroup.name = 'Tiles';
     this.outlineGroup = new Group();
     this.outlineGroup.name = 'Outlines';
-    this.roadGroup = new Group();
-    this.roadGroup.name = 'Roads';
+    this.roadHubGroup = new Group();
+    this.roadHubGroup.name = 'Road Hub';
+    this.roadOuterGroup = new Group();
+    this.roadOuterGroup.name = 'Road Outer';
+    this.roadInnerGroup = new Group();
+    this.roadInnerGroup.name = 'Road Inner';
     this.buildingGroup = new Group();
     this.buildingGroup.name = 'Buildings';
     this.unitGroup = new Group();
@@ -228,7 +234,7 @@ export class GameComponent implements AfterViewInit {
     this.cities.push(city);
     city.productivity = 5;
 
-    tile.addBuilding(city, this.roadGroup);
+    tile.addBuilding(city, this.roadInnerGroup, this.roadOuterGroup);
     tile.setOutlineColor(player.color);
     // (tile.group.children[1] as Raster).visible = false;
     this.project.importSVG('assets/svg/city-svgrepo-com-filled.svg', (item: Item) => {

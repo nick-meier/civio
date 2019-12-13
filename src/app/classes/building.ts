@@ -21,7 +21,7 @@ export class Road {
     private innerSpokes: Path[];
     private outerSpokes: Path[];
 
-    constructor(roadGroup: Group, tile: Tile) {
+    constructor(roadInnerGroup: Group, roadOuterGroup: Group, tile: Tile) {
         this.innerSpokes = [null, null, null, null, null, null];
         this.outerSpokes = [null, null, null, null, null, null];
 
@@ -60,8 +60,8 @@ export class Road {
             );
         }
 
-        roadGroup.addChildren(this.outerSpokes);
-        roadGroup.addChildren(this.innerSpokes);
+        roadOuterGroup.addChildren(this.outerSpokes);
+        roadInnerGroup.addChildren(this.innerSpokes);
     }
 
     public toggleSpoke(index: number, visible: boolean) {
@@ -74,12 +74,12 @@ export class RoadHub extends Building {
     private hub: Path;
 
 
-    constructor(owner: Player, position: Point, buildingGroup: Group) {
+    constructor(owner: Player, position: Point, roadHubGroup: Group) {
         super(owner);
         this.hub = new Path.Circle(position, 20);
         this.hub.fillColor = new Color(1, 1, 1);
         this.hub.strokeColor = new Color(0, 0, 0);
-        buildingGroup.addChild(this.hub);
+        roadHubGroup.addChild(this.hub);
     }
 
     onAddToTile(tile: Tile) {

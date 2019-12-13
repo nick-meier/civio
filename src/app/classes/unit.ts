@@ -41,9 +41,9 @@ export class Engineer extends Unit {
         });
     }
 
-    buildRoad(buildingGroup: Group, roadGroup: Group, tile: Tile) {
-        const road = new RoadHub(this.owner, tile.group.position, buildingGroup);
-        tile.addBuilding(road, roadGroup);
+    buildRoad(roadHubGroup: Group, roadInnerGroup: Group, roadOuterGroup: Group, tile: Tile) {
+        const road = new RoadHub(this.owner, tile.group.position, roadHubGroup);
+        tile.addBuilding(road, roadInnerGroup, roadOuterGroup);
     }
 }
 
