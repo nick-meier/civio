@@ -77,7 +77,7 @@ export class RoadHub extends Building {
 
     constructor(owner: Player, position: Point, roadHubInnerGroup: Group, roadHubOuterGroup: Group) {
         super(owner);
-        const size = 20;
+        const size = 18;
         this.inner = new Path.Circle(position, .9 * size);
         this.inner.fillColor = new Color(1, 1, 1);
         this.outer = new Path.Circle(position, size);
