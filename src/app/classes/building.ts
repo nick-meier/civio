@@ -28,7 +28,8 @@ export class Road {
         const hexRadius = 50;
         const topLeftPoint = new Point(0, 0);
         const spokeSize = new Point(hexRadius / 2 / 2, hexRadius * Math.sqrt(3) / 2);
-        const innerSpokeSize = new Point(spokeSize.x * .9, spokeSize.y);
+        spokeSize.y *= 1.02; // Extend past tile to avoid pixel seams
+        const innerSpokeSize = new Point(spokeSize.x * .75, spokeSize.y);
         this.outerSpokes[0] = new Path.Rectangle(topLeftPoint, spokeSize);
         this.innerSpokes[0] = new Path.Rectangle(topLeftPoint, innerSpokeSize);
         // const mapOffset = new Point(25 * Math.sqrt(3), 50);
@@ -71,15 +72,18 @@ export class Road {
 }
 
 export class RoadHub extends Building {
-    private hub: Path;
+    private outer: Path;
+    private inner: Path;
 
-
-    constructor(owner: Player, position: Point, roadHubGroup: Group) {
+    constructor(owner: Player, position: Point, roadHubInnerGroup: Group, roadHubOuterGroup: Group) {
         super(owner);
-        this.hub = new Path.Circle(position, 20);
-        this.hub.fillColor = new Color(1, 1, 1);
-        this.hub.strokeColor = new Color(0, 0, 0);
-        roadHubGroup.addChild(this.hub);
+        const size = 20;
+        this.inner = new Path.Circle(position, .9 * size);
+        this.inner.fillColor = new Color(1, 1, 1);
+        this.outer = new Path.Circle(position, size);
+        this.outer.fillColor = new Color(0, 0, 0);
+        roadHubInnerGroup.addChild(this.inner);
+        roadHubOuterGroup.addChild(this.outer);
     }
 
     onAddToTile(tile: Tile) {

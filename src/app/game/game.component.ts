@@ -20,8 +20,9 @@ export class GameComponent implements AfterViewInit {
   private mapLayer: Layer;
   private tileGroup: Group;
   private outlineGroup: Group;
-  public roadHubGroup: Group;
+  public roadHubOuterGroup: Group;
   public roadOuterGroup: Group;
+  public roadHubInnerGroup;
   public roadInnerGroup: Group;
   public buildingGroup: Group;
   private unitGroup: Group;
@@ -50,10 +51,12 @@ export class GameComponent implements AfterViewInit {
     this.tileGroup.name = 'Tiles';
     this.outlineGroup = new Group();
     this.outlineGroup.name = 'Outlines';
-    this.roadHubGroup = new Group();
-    this.roadHubGroup.name = 'Road Hub';
+    this.roadHubOuterGroup = new Group();
+    this.roadHubOuterGroup.name = 'Road Hub Outer';
     this.roadOuterGroup = new Group();
     this.roadOuterGroup.name = 'Road Outer';
+    this.roadHubInnerGroup = new Group();
+    this.roadHubInnerGroup.name = 'Road Hub Inner';
     this.roadInnerGroup = new Group();
     this.roadInnerGroup.name = 'Road Inner';
     this.buildingGroup = new Group();

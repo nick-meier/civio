@@ -22,7 +22,7 @@ export class AI {
             if (unit instanceof Engineer) {
                 const engineer = unit as Engineer;
                 if (!engineer.tile.hasBuilding()) {
-                    engineer.buildRoad(game.roadHubGroup, game.roadInnerGroup, game.roadOuterGroup, engineer.tile);
+                    engineer.buildRoad(game.roadHubInnerGroup, game.roadHubOuterGroup, game.roadInnerGroup, game.roadOuterGroup, engineer.tile);
                 } else if ((movableNeighbors = engineer.tile.neighbors.filter(neighbor => neighbor && !neighbor.hasUnit())).length > 0) {
                     const randomMovableNeighbor = movableNeighbors[Math.floor(movableNeighbors.length * Math.random())];
                     engineer.move(randomMovableNeighbor);
