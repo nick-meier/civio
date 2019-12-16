@@ -1,5 +1,5 @@
 import { Player } from './player';
-import { EngineerProduction } from './building';
+import { EngineerProduction, CurrencyProduction } from './building';
 import { GameComponent } from '../game/game.component';
 import { Engineer } from './unit';
 
@@ -13,7 +13,9 @@ export class AI {
 
     think(game: GameComponent) {
         this.player.cities.forEach(city => {
-            if (!city.production) {
+            if (this.player.currency < this.player.upkeepCost) {
+                city.startProduction(new CurrencyProduction(city, 1));
+            } else if (!city.production) {
                 city.startProduction(new EngineerProduction(city));
             }
         });
@@ -22,7 +24,11 @@ export class AI {
             if (unit instanceof Engineer) {
                 const engineer = unit as Engineer;
                 if (!engineer.tile.hasBuilding()) {
-                    engineer.buildRoad(game.roadHubInnerGroup, game.roadHubOuterGroup, game.roadInnerGroup, game.roadOuterGroup, engineer.tile);
+                    engineer.buildRoad(
+                        game.roadHubInnerGroup, game.roadHubOuterGroup,
+                        game.roadInnerGroup, game.roadOuterGroup,
+                        engineer.tile
+                    );
                 } else if ((movableNeighbors = engineer.tile.neighbors.filter(neighbor => neighbor && !neighbor.hasUnit())).length > 0) {
                     const randomMovableNeighbor = movableNeighbors[Math.floor(movableNeighbors.length * Math.random())];
                     engineer.move(randomMovableNeighbor);

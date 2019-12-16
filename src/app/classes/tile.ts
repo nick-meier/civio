@@ -29,10 +29,14 @@ export class Tile {
   createVisuals(radius: number, position: Point, texturePath: string, outlineGroup: Group, tileGroup: Group) {
     this.canvasPoints = [];
     this.innerPoints = [];
-    const angle = ((2 * Math.PI) / 6);
+    const offsetAngle = -((2 * Math.PI) / 6);
+    const initialAngle = 3 * offsetAngle;
     // Generating the initial point as the final point
     for (let i = 0; i <= 6; i++) {
-      const point = new Point(radius * Math.sin(angle * i), radius * Math.cos(angle * i));
+      const point = new Point(
+        radius * Math.sin(initialAngle + offsetAngle * i),
+        radius * Math.cos(initialAngle + offsetAngle * i)
+      );
       const innerPoint = point.multiply(.9);
       this.canvasPoints.push(point);
       this.innerPoints.push(innerPoint);
@@ -77,6 +81,7 @@ export class Tile {
     const outlineGroup = new Group();
     outlineGroup.name = 'Outline';
     outlinesGroup.addChild(outlineGroup);
+    const outlines = [];
     for (let i = 0; i < 6; i++) {
       const outlinePoints = [
         this.canvasPoints[i],
@@ -86,10 +91,12 @@ export class Tile {
         this.canvasPoints[i]
       ];
       const outline = new Path(outlinePoints);
-      outlineGroup.addChild(outline);
+      outlines.push(outline);
+      // outlineGroup.addChild(outline);
       outline.visible = false;
       // outline.fillColor = new Color(.7, .8, .9);
     }
+    outlineGroup.addChildren(outlines);
     outlineGroup.position = position;
     this.outline = outlineGroup;
   }
@@ -133,12 +140,33 @@ export class Tile {
       this.road = new Road(roadInnerGroup, roadOuterGroup, this);
     }
 
+
     this.building = building;
+    this.updateOutlines();
+
     building.onAddToTile(this);
   }
 
   hasBuilding(): boolean {
     return Boolean(this.building);
+  }
+
+  updateOutlines() {
+    if (!this.building) {
+      this.outline.children.forEach(item => item.visible = false);
+    } else {
+      this.setOutlineColor(this.building.owner.color);
+      for (let i = 0; i < 6; i++) {
+        if (!this.neighbors[i]) continue;
+        // draw outline if no building adjacent or 
+        if (!this.neighbors[i].building || this.neighbors[i].building.owner !== this.building.owner) {
+          this.outline.children[i].visible = true;
+        } else {
+          this.outline.children[i].visible = false;
+          this.neighbors[i].outline.children[(i + 3) % 6].visible = false;
+        }
+      }
+    }
   }
 
   owner(): Player {

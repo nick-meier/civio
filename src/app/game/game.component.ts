@@ -16,7 +16,7 @@ export class GameComponent implements AfterViewInit {
   @ViewChild('paperCanvas', { static: false }) canvasElement: ElementRef;
 
   private scope: PaperScope;
-  private project: Project;
+  public project: Project;
   private mapLayer: Layer;
   private tileGroup: Group;
   private outlineGroup: Group;
@@ -25,7 +25,7 @@ export class GameComponent implements AfterViewInit {
   public roadHubInnerGroup;
   public roadInnerGroup: Group;
   public buildingGroup: Group;
-  private unitGroup: Group;
+  public unitGroup: Group;
 
   private allTiles: Tile[];
   private tiles: Tile[][];
@@ -257,7 +257,7 @@ export class GameComponent implements AfterViewInit {
   createUnit(forPlayer: Player, onTile: Tile, named: string): Unit {
     let unit: Unit;
     if (named === 'Engineer') {
-      unit = this.createEngineer(forPlayer);
+      unit = forPlayer.createEngineer(this.project, this.unitGroup);
     }
     unit.move(onTile);
     return unit;
@@ -287,11 +287,5 @@ export class GameComponent implements AfterViewInit {
     this.players.forEach(player => {
       player.upkeep();
     });
-  }
-
-  createEngineer(owner: Player): Engineer {
-    const engineer = new Engineer(this.project, this.unitGroup);
-    engineer.owner = owner;
-    return engineer;
   }
 }

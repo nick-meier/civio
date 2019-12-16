@@ -122,7 +122,7 @@ export class City extends Building {
     spawnEngineer(): Engineer {
         const emptyTile = (this.tile.hasUnit() ? this.tile.neighbors.find(tile => Boolean(tile) && !tile.hasUnit()) : this.tile);
         if (emptyTile) {
-            const engineer = this.game.createEngineer(this.owner);
+            const engineer = this.owner.createEngineer(this.game.project, this.game.unitGroup);
             engineer.move(emptyTile);
             return engineer;
         }
@@ -163,5 +163,20 @@ export class EngineerProduction extends Production {
             engineer.owner = this.forCity.owner;
             this.forCity.owner.units.push(engineer);
         }
+    }
+}
+
+export class CurrencyProduction extends Production {
+    amount: number;
+
+    constructor(city: City, amount: number) {
+        super(city);
+        this.workTotal = 5;
+        this.amount = amount;
+    }
+
+    complete() {
+        this.forCity.owner.currency += this.amount;
+        console.log('Currency production complete: ', this.forCity.owner.currency);
     }
 }
