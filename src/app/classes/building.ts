@@ -7,13 +7,25 @@ import { Point, Path, Color, Group, Item } from 'paper';
 export abstract class Building {
     protected tile: Tile;
     public owner: Player;
+    public upkeepCost: number;
 
     constructor(owner: Player) {
         this.owner = owner;
+        this.owner.buildings.push(this);
+        this.upkeepCost = 0;
     }
 
     onAddToTile(tile: Tile) {
         this.tile = tile;
+    }
+
+    destroy() {
+        console.log('DESTROY BUILD');
+        if (this.tile) this.tile.removeBuilding();
+        if (this.owner) {
+            const index = this.owner.buildings.indexOf(this);
+            this.owner.buildings.splice(index, 1);
+        }
     }
 }
 
@@ -84,6 +96,7 @@ export class RoadHub extends Building {
         this.outer.fillColor = new Color(0, 0, 0);
         roadHubInnerGroup.addChild(this.inner);
         roadHubOuterGroup.addChild(this.outer);
+        this.upkeepCost = 1;
     }
 
     onAddToTile(tile: Tile) {
@@ -99,13 +112,11 @@ export class RoadHub extends Building {
 }
 
 export class City extends Building {
-    public game: GameComponent;
     public productivity: number;
     public production: Production;
 
-    constructor(owner: Player, game: GameComponent) {
+    constructor(owner: Player) {
         super(owner);
-        this.game = game;
     }
 
     produce() {
@@ -122,7 +133,7 @@ export class City extends Building {
     spawnEngineer(): Engineer {
         const emptyTile = (this.tile.hasUnit() ? this.tile.neighbors.find(tile => Boolean(tile) && !tile.hasUnit()) : this.tile);
         if (emptyTile) {
-            const engineer = this.owner.createEngineer(this.game.project, this.game.unitGroup);
+            const engineer = this.owner.createEngineer();
             engineer.move(emptyTile);
             return engineer;
         }
@@ -158,11 +169,7 @@ export class EngineerProduction extends Production {
     }
 
     complete() {
-        const engineer = this.forCity.spawnEngineer();
-        if (engineer) {
-            engineer.owner = this.forCity.owner;
-            this.forCity.owner.units.push(engineer);
-        }
+        this.forCity.spawnEngineer();
     }
 }
 

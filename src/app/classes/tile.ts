@@ -147,6 +147,14 @@ export class Tile {
     building.onAddToTile(this);
   }
 
+  removeBuilding() {
+    if (this.building === null) return;
+
+    this.road = null;
+    this.building = null;
+    this.updateOutlines();
+  }
+
   hasBuilding(): boolean {
     return Boolean(this.building);
   }

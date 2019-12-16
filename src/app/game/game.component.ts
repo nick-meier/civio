@@ -1,7 +1,6 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { PaperScope, Project, Path, Color, Point, Item, Group, Raster, Layer } from 'paper';
 import { shuffleArray, range } from '../classes/utility';
-import { Engineer, Unit } from '../classes/unit';
 import { Player } from '../classes/player';
 import { Tile } from '../classes/tile';
 import { City } from '../classes/building';
@@ -82,7 +81,7 @@ export class GameComponent implements AfterViewInit {
       colors.push(color);
     }
     for (let i = 0; i < 20; i++) {
-      const player = new Player();
+      const player = new Player(this);
       const ai = new AI(player);
       this.ais.push(ai);
       // const randomColorIndex = Math.floor(Math.random() * colors.length);
@@ -95,8 +94,6 @@ export class GameComponent implements AfterViewInit {
       this.createCity(player, this.getEmptyTile());
       this.players.push(player);
     }
-    this.createUnit(this.players[0], this.tiles[0][0], 'Engineer');
-    console.log('project', this.project);
     setInterval(this.gameLoop.bind(this), 1000);
     setInterval(this.upkeepLoop.bind(this), 10000);
   }
@@ -232,7 +229,7 @@ export class GameComponent implements AfterViewInit {
   }
 
   createCity(player: Player, tile: Tile) {
-    const city = new City(player, this);
+    const city = new City(player);
     player.cities.push(city);
     this.cities.push(city);
     city.productivity = 5;
@@ -251,16 +248,6 @@ export class GameComponent implements AfterViewInit {
       // item.strokeWidth = .2;
       this.buildingGroup.addChild(item);
     });
-
-  }
-
-  createUnit(forPlayer: Player, onTile: Tile, named: string): Unit {
-    let unit: Unit;
-    if (named === 'Engineer') {
-      unit = forPlayer.createEngineer(this.project, this.unitGroup);
-    }
-    unit.move(onTile);
-    return unit;
   }
 
   canvasScroll(event) {
