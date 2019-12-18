@@ -138,6 +138,12 @@ export class Tile {
 
     if (this.road == null) {
       this.road = new Road(roadInnerGroup, roadOuterGroup, this);
+    } else {
+      // Re-enable road
+      for (let i = 0; i < 6; i++) {
+        const showSpoke = this.neighbors[i] && this.neighbors[i].building && this.neighbors[i].building.owner === building.owner;
+        this.road.toggleSpoke(i, showSpoke);
+      }
     }
 
 
@@ -150,7 +156,13 @@ export class Tile {
   removeBuilding() {
     if (this.building === null) return;
 
+    // Disable road
+    for (let i = 0; i < 6; i++) {
+      this.road.toggleSpoke(i, false);
+      if (this.neighbors[i]) this.neighbors[i].road.toggleSpoke((i + 3) % 6, false);
+    }
     this.road = null;
+
     this.building = null;
     this.updateOutlines();
   }
