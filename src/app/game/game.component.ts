@@ -5,6 +5,7 @@ import { Player } from '../classes/player';
 import { Tile } from '../classes/tile';
 import { City } from '../classes/building';
 import { AI } from '../classes/ai';
+import { PlayerService } from '../player.service';
 
 @Component({
   selector: 'app-game',
@@ -33,7 +34,11 @@ export class GameComponent implements AfterViewInit {
 
   private cities: City[];
 
-  constructor() { }
+  private playerService: PlayerService;
+
+  constructor(score: PlayerService) {
+    this.playerService = score;
+  }
 
   ngAfterViewInit() {
     this.scope = new PaperScope();
@@ -93,6 +98,7 @@ export class GameComponent implements AfterViewInit {
       const emptyTile = this.getEmptyTile();
       this.createCity(player, this.getEmptyTile());
       this.players.push(player);
+      this.playerService.registerPlayer(player);
     }
     setInterval(this.gameLoop.bind(this), 1000);
     setInterval(this.upkeepLoop.bind(this), 10000);

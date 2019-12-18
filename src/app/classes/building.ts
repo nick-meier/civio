@@ -183,7 +183,7 @@ export class CurrencyProduction extends Production {
     }
 
     complete() {
-        this.forCity.owner.currency += this.amount;
-        console.log('Currency production complete: ', this.forCity.owner.currency);
+        this.forCity.owner.Currency += this.amount;
+        // console.log('Currency production complete: ', this.forCity.owner.Currency);
     }
 }

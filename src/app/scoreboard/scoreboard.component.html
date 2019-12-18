@@ -1,0 +1,5 @@
+<div id='background'></div>
+<h1>Scoreboard</h1>
+<li *ngFor="let player of playerService.players; index as i">Player {{i}}:
+  {{this.scores.get(player)}}
+</li>

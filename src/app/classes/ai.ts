@@ -13,7 +13,7 @@ export class AI {
 
     think(game: GameComponent) {
         this.player.cities.forEach(city => {
-            if (this.player.currency < this.player.upkeepCost) {
+            if (this.player.Currency < this.player.upkeepCost) {
                 city.startProduction(new CurrencyProduction(city, 1));
             } else if (!city.production) {
                 city.startProduction(new EngineerProduction(city));
