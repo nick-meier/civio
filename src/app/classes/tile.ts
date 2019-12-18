@@ -161,7 +161,13 @@ export class Tile {
 
   updateOutlines() {
     if (!this.building) {
-      this.outline.children.forEach(item => item.visible = false);
+      for (let i = 0; i < 6; i++) {
+        this.outline.children[i].visible = false;
+
+        if (this.neighbors[i] && this.neighbors[i].building) {
+          this.neighbors[i].outline.children[(i + 3) % 6].visible = true;
+        }
+      }
     } else {
       this.setOutlineColor(this.building.owner.color);
       for (let i = 0; i < 6; i++) {
