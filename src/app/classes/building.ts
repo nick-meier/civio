@@ -109,6 +109,12 @@ export class RoadHub extends Building {
             }
         }
     }
+
+    public destroy() {
+        this.outer.remove();
+        this.inner.remove();
+        super.destroy();
+    }
 }
 
 export class City extends Building {
