@@ -159,7 +159,7 @@ export class Tile {
     // Disable road
     for (let i = 0; i < 6; i++) {
       this.road.toggleSpoke(i, false);
-      if (this.neighbors[i]) this.neighbors[i].road.toggleSpoke((i + 3) % 6, false);
+      if (this.neighbors[i] && this.neighbors[i].road) this.neighbors[i].road.toggleSpoke((i + 3) % 6, false);
     }
     this.road = null;
 
