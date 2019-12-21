@@ -6,7 +6,7 @@ import { RoadHub } from './building';
 export abstract class Unit {
     private owner: Player;
     public get Owner() { return this.owner; }
-    public set Owner(value) { 
+    public set Owner(value) {
         this.owner = value;
         this.owner.units.push(this);
     }
@@ -45,6 +45,10 @@ export class Engineer extends Unit {
     }
 
     buildRoad(roadHubInnerGroup: Group, roadHubOuterGroup: Group, roadInnerGroup: Group, roadOuterGroup: Group, tile: Tile) {
+        if (tile.biome === 'Ocean') {
+            console.error('Can\'t build a road on an ocean tile.');
+            return;
+        }
         const road = new RoadHub(this.Owner, tile.group.position, roadHubInnerGroup, roadHubOuterGroup);
         tile.addBuilding(road, roadInnerGroup, roadOuterGroup);
     }

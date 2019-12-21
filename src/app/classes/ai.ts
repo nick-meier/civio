@@ -23,7 +23,7 @@ export class AI {
         this.player.units.forEach(unit => {
             if (unit instanceof Engineer) {
                 const engineer = unit as Engineer;
-                if (!engineer.tile.hasBuilding()) {
+                if (!engineer.tile.hasBuilding() && !(engineer.tile.biome === 'Ocean')) {
                     engineer.buildRoad(
                         game.roadHubInnerGroup, game.roadHubOuterGroup,
                         game.roadInnerGroup, game.roadOuterGroup,
