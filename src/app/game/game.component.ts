@@ -96,7 +96,6 @@ export class GameComponent implements AfterViewInit {
       const randomColor = colors.pop();
 
       player.color = randomColor;
-      const emptyTile = this.getEmptyTile();
       this.createCity(player, this.getEmptyTile());
       this.players.push(player);
       this.playerService.registerPlayer(player);
@@ -111,7 +110,7 @@ export class GameComponent implements AfterViewInit {
 
     for (let i = 0; i < indexList.length; i++) {
       const tile = this.allTiles[indexList[i]];
-      if (tile.hasBuilding()) continue;
+      if (tile.hasBuilding() || tile.biome === 'Ocean') continue;
       if (tile.neighbors.find((neighbor) => Boolean(neighbor) && neighbor.hasBuilding())) continue;
       return tile;
     }
