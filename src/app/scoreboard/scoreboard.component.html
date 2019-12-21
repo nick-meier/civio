@@ -1,5 +1,7 @@
 <div id='background'></div>
-<h1>Scoreboard</h1>
-<li *ngFor="let player of playerService.players; index as i">Player {{i}}:
-  {{this.scores.get(player)}}
-</li>
+<div name='content' style='overflow: scroll; height: 100%;'>
+  <h1>Scoreboard</h1>
+  <li *ngFor="let player of playerService.players; index as i">Player {{i}}:
+    {{this.scores.get(player)}}
+  </li>
+</div>
