@@ -139,7 +139,7 @@ export class GameComponent implements AfterViewInit {
         else if (r < 0.99) biome = 'Desert';
         else biome = 'Mountain';
         const elevation = 20 * perlin.noise(i / rows * 4, j / columns * 4);
-        console.log('elevation', elevation);
+        // console.log('elevation', elevation);
         const tile = new Tile(biome, elevation);
         tile.x = j;
         tile.y = i;
@@ -186,7 +186,7 @@ export class GameComponent implements AfterViewInit {
     const maxIterations = 100;
     let iterations = 0;
     while (rainTiles.length > 0 && iterations++ < maxIterations) {
-      console.log('rain loop - length', rainTiles.length);
+      // console.log('rain loop - length', rainTiles.length);
       for (let i = rainTiles.length - 1; i >= 0; i--) {
         const rainTile = rainTiles[i];
         const rainTileWaterLevel = rainTile.elevation + rainTile.water;
@@ -222,7 +222,7 @@ export class GameComponent implements AfterViewInit {
 
     // Create oceans
     this.allTiles.forEach(tile => {
-      if (tile.water > 1) tile.biome = 'Ocean';
+      if (tile.water > 1.5) tile.biome = 'Ocean';
     });
   }
 
