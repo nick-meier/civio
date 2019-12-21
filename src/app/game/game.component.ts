@@ -135,7 +135,7 @@ export class GameComponent implements AfterViewInit {
         const r = Math.random();
         if (r < 0.7) biome = 'Forest';
         else if (r < 0.9) biome = 'Grass';
-        else if (r < 0.99) biome = 'Desert';
+        else if (r < 0.98) biome = 'Desert';
         else biome = 'Mountain';
         const elevation = 20 * perlin.noise(i / rows * 4, j / columns * 4);
         // console.log('elevation', elevation);
@@ -221,7 +221,10 @@ export class GameComponent implements AfterViewInit {
 
     // Create oceans
     this.allTiles.forEach(tile => {
-      if (tile.water > 1.5) tile.biome = 'Ocean';
+      if (tile.water > 1.5) {
+        if (tile.biome === 'Mountain') tile.biome = 'Island';
+        else tile.biome = 'Ocean';
+      }
     });
   }
 
@@ -255,6 +258,10 @@ export class GameComponent implements AfterViewInit {
     const oceanImages = [
       'assets/images/unlicensed/biomes/ocean/0.png'
     ];
+    const islandImages = [
+      // 'assets/images/unlicensed/biomes/island/0.jpg',
+      'assets/images/unlicensed/biomes/island/1.jpg'
+    ];
     const mapOffset = new Point(25 * Math.sqrt(3), 50);
 
     for (let i = 0; i < columns; i++) {
@@ -266,6 +273,7 @@ export class GameComponent implements AfterViewInit {
         else if (tile.biome === 'Desert') imageList = desertImages;
         else if (tile.biome === 'Mountain') imageList = mountainImages;
         else if (tile.biome === 'Ocean') imageList = oceanImages;
+        else if (tile.biome === 'Island') imageList = islandImages;
         const imagePath = imageList[Math.floor(Math.random() * imageList.length)];
         // const hexagon = tile.createTexturedHexagon(forestImagePath);
         // const hexagon = this.createHexagon(hexSize);
