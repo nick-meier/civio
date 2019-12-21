@@ -6,6 +6,7 @@ import { Tile } from '../classes/tile';
 import { City } from '../classes/building';
 import { AI } from '../classes/ai';
 import { PlayerService } from '../player.service';
+import { Perlin } from '../perlin';
 
 @Component({
   selector: 'app-game',
@@ -124,6 +125,8 @@ export class GameComponent implements AfterViewInit {
   }
 
   createTiles(rows: number, columns: number) {
+    const perlin = new Perlin(4);
+
     this.tiles = [];
     this.allTiles = [];
     for (let i = 0; i < rows; i++) {
@@ -135,7 +138,9 @@ export class GameComponent implements AfterViewInit {
         else if (r < 0.9) biome = 'Grass';
         else if (r < 0.99) biome = 'Desert';
         else biome = 'Mountain';
-        const tile = new Tile(biome);
+        const elevation = 20 * perlin.noise(i / rows * 4, j / columns * 4);
+        console.log('elevation', elevation);
+        const tile = new Tile(biome, elevation);
         tile.x = j;
         tile.y = i;
         this.tiles[i][j] = tile;
@@ -174,6 +179,51 @@ export class GameComponent implements AfterViewInit {
         // }
       }
     }
+
+    // Simulate rainfall
+    const rainTiles = this.allTiles.slice();
+    rainTiles.forEach(rainTile => rainTile.water = 1);
+    const maxIterations = 100;
+    let iterations = 0;
+    while (rainTiles.length > 0 && iterations++ < maxIterations) {
+      console.log('rain loop - length', rainTiles.length);
+      for (let i = rainTiles.length - 1; i >= 0; i--) {
+        const rainTile = rainTiles[i];
+        const rainTileWaterLevel = rainTile.elevation + rainTile.water;
+        const waterLevelDiffs = new Array<number>(6);
+        let totalDiff = 0;
+        for (let j = 0; j < 6; j++) {
+          const neighbor = rainTile.neighbors[j];
+          if (!neighbor) {
+            waterLevelDiffs[j] = 0;
+            continue;
+          }
+          const neighborWaterLevel = neighbor.elevation + neighbor.water;
+          if (rainTileWaterLevel > neighborWaterLevel) {
+            const waterLevelDiff = rainTileWaterLevel - neighborWaterLevel;
+            waterLevelDiffs[j] = waterLevelDiff;
+            totalDiff += waterLevelDiff;
+          } else {
+            waterLevelDiffs[j] = 0;
+          }
+        }
+        if (totalDiff > 0) {
+          for (let j = 0; j < 6; j++) {
+            if (waterLevelDiffs[j] === 0) continue;
+            const transferPercent = waterLevelDiffs[j] / totalDiff;
+            rainTile.neighbors[j].water += rainTile.water * transferPercent * .5;
+          }
+          rainTile.water /= 2;
+        } else {
+          rainTiles.splice(i, 1);
+        }
+      }
+    }
+
+    // Create oceans
+    this.allTiles.forEach(tile => {
+      if (tile.water > 1) tile.biome = 'Ocean';
+    });
   }
 
   // create grid give then tile data map????
@@ -203,6 +253,9 @@ export class GameComponent implements AfterViewInit {
       'assets/images/unlicensed/biomes/mountain/mountain0.jpg',
       'assets/images/unlicensed/biomes/mountain/mountain1.jpg'
     ];
+    const oceanImages = [
+      'assets/images/unlicensed/biomes/ocean/0.png'
+    ];
     const mapOffset = new Point(25 * Math.sqrt(3), 50);
 
     for (let i = 0; i < columns; i++) {
@@ -213,6 +266,7 @@ export class GameComponent implements AfterViewInit {
         else if (tile.biome === 'Grass') imageList = grassImages;
         else if (tile.biome === 'Desert') imageList = desertImages;
         else if (tile.biome === 'Mountain') imageList = mountainImages;
+        else if (tile.biome === 'Ocean') imageList = oceanImages;
         const imagePath = imageList[Math.floor(Math.random() * imageList.length)];
         // const hexagon = tile.createTexturedHexagon(forestImagePath);
         // const hexagon = this.createHexagon(hexSize);

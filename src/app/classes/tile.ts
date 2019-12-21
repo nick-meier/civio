@@ -11,6 +11,8 @@ export class Tile {
   // path: Path;
 
   biome: string;
+  elevation: number;
+  water: number;
 
   outline: Group;
 
@@ -21,8 +23,9 @@ export class Tile {
   private building: Building;
   public road: Road;
 
-  constructor(biome: string) {
+  constructor(biome: string, elevation: number) {
     this.biome = biome;
+    this.elevation = elevation;
     this.neighbors = new Array<Tile>(6);
   }
 
