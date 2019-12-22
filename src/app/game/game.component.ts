@@ -46,12 +46,6 @@ export class GameComponent implements AfterViewInit {
     this.project = new Project(this.canvasElement.nativeElement);
     this.mapLayer = new Layer();
     this.project.addLayer(this.mapLayer);
-    const background = new Path.Rectangle(
-      new Point(0, 0),
-      new Point(this.canvasElement.nativeElement.width, this.canvasElement.nativeElement.height)
-    );
-    background.fillColor = new Color(.1, .1, .1);
-    this.mapLayer.addChild(background);
     this.tileGroup = new Group();
     this.tileGroup.name = 'Tiles';
     this.outlineGroup = new Group();
@@ -69,8 +63,8 @@ export class GameComponent implements AfterViewInit {
     this.unitGroup = new Group();
     this.unitGroup.name = 'Units';
 
-    const rows = 18;
-    const columns = 23;
+    const rows = 32;
+    const columns = 32;
     this.createTiles(rows, columns);
     this.createHexagonGrid(this.tiles);
 
@@ -317,8 +311,9 @@ export class GameComponent implements AfterViewInit {
     });
   }
 
-  canvasScroll(event) {
-    // event.preventDefault();
+  canvasScroll(event: WheelEvent) {
+    event.preventDefault();
+    this.project.view.translate(new Point(-event.deltaX, -event.deltaY));
   }
 
   // resizeCanvas() {

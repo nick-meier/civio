@@ -1,5 +1,5 @@
-<div style="overflow: scroll; width: 100%; height: 100%;" (scroll)="canvasScroll($event)">
-  <canvas #paperCanvas style="width:2048px; height:2048px"></canvas>
+<div style="width: 100%; height: 100%;">
+  <canvas #paperCanvas style="width:100%; height:100%" (wheel)="canvasScroll($event)"></canvas>
 </div>
 <div style="position: absolute; top: 5%; left: 75%; width: 20%; height: 50%;">
   <app-scoreboard></app-scoreboard>
