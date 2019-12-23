@@ -1,8 +1,8 @@
-import { Color, Project, Group } from 'paper';
 import { City, Building } from './building';
 import { Unit, Engineer } from './unit';
 import { GameComponent } from '../game/game.component';
 import { Subject, BehaviorSubject } from 'rxjs';
+import { Color } from 'three';
 
 export class Player {
     public game: GameComponent;

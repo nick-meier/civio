@@ -1,5 +1,4 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { PaperScope, Project, Path, Color, Point, Item, Group, Raster, Layer } from 'paper';
 import { shuffleArray, range } from '../classes/utility';
 import { Player } from '../classes/player';
 import { Tile } from '../classes/tile';
@@ -7,6 +6,7 @@ import { City } from '../classes/building';
 import { AI } from '../classes/ai';
 import { PlayerService } from '../player.service';
 import { Perlin } from '../perlin';
+import { Scene, Renderer, Camera, OrthographicCamera, WebGLRenderer, Color } from 'three';
 
 @Component({
   selector: 'app-game',
@@ -14,10 +14,13 @@ import { Perlin } from '../perlin';
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements AfterViewInit {
-  @ViewChild('paperCanvas', { static: false }) canvasElement: ElementRef;
+  @ViewChild('threeContainer', { static: false }) threeContainer: ElementRef<HTMLDivElement>;
 
-  private scope: PaperScope;
-  public project: Project;
+  // Three JS
+  private scene: Scene;
+  private camera: Camera;
+  private renderer: Renderer;
+
   private mapLayer: Layer;
   private tileGroup: Group;
   private outlineGroup: Group;
@@ -42,26 +45,11 @@ export class GameComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.scope = new PaperScope();
-    this.project = new Project(this.canvasElement.nativeElement);
-    this.mapLayer = new Layer();
-    this.project.addLayer(this.mapLayer);
-    this.tileGroup = new Group();
-    this.tileGroup.name = 'Tiles';
-    this.outlineGroup = new Group();
-    this.outlineGroup.name = 'Outlines';
-    this.roadHubOuterGroup = new Group();
-    this.roadHubOuterGroup.name = 'Road Hub Outer';
-    this.roadOuterGroup = new Group();
-    this.roadOuterGroup.name = 'Road Outer';
-    this.roadHubInnerGroup = new Group();
-    this.roadHubInnerGroup.name = 'Road Hub Inner';
-    this.roadInnerGroup = new Group();
-    this.roadInnerGroup.name = 'Road Inner';
-    this.buildingGroup = new Group();
-    this.buildingGroup.name = 'Buildings';
-    this.unitGroup = new Group();
-    this.unitGroup.name = 'Units';
+    this.scene = new Scene();
+    this.camera = new OrthographicCamera(100, 100, 100, 100, 0);
+    this.renderer = new WebGLRenderer();
+    this.renderer.setSize(this.threeContainer.nativeElement.clientWidth, this.threeContainer.nativeElement.clientHeight);
+    this.threeContainer.nativeElement.appendChild(this.renderer.domElement);
 
     const rows = 32;
     const columns = 32;
@@ -74,10 +62,8 @@ export class GameComponent implements AfterViewInit {
 
     const colors: Color[] = [];
     for (let i = 0; i < 360; i += 10) {
-      const color = new Color(255, 255, 255);
-      color.hue = i;
-      color.saturation = 1;
-      color.brightness = 1;
+      const color = new Color();
+      color.setHSL(i, 1, 1);
       colors.push(color);
     }
     for (let i = 0; i < 20; i++) {
