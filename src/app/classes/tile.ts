@@ -1,4 +1,5 @@
-import { Group, Point, Raster, Path, Color } from 'paper';
+import { Group, Point, Raster, Path } from 'paper';
+import { Color } from 'three';
 import { Unit } from './unit';
 import { Building, Road } from './building';
 import { Player } from './player';
@@ -44,12 +45,17 @@ export class Tile {
       this.canvasPoints.push(point);
       this.innerPoints.push(innerPoint);
     }
+    console.error('Not implemented');
+    /*
     const hexagon = this.createTexturedHexagon(texturePath);
     tileGroup.addChild(hexagon);
     this.createOutlines(outlineGroup, position);
+    */
   }
 
-  createTexturedHexagon(imgPath: string): Group {
+  createTexturedHexagon(imgPath: string) {
+    console.error('Not implemented.');
+    /*
     const clippingGroup = new Group();
     clippingGroup.name = 'Texture Clip';
     clippingGroup.clipped = true;
@@ -71,13 +77,16 @@ export class Tile {
     return clippingGroup;
   }
 
-  createHexagon(): Path {
+  createHexagon() {
+    console.error('Not implemented.');
+    /*
     const hexagon = new Path();
     hexagon.strokeColor = new Color(0, 0, 0);
     this.canvasPoints.forEach(point => {
       hexagon.add(point);
     });
     return hexagon;
+    */
   }
 
   createOutlines(outlinesGroup: Group, position: Point) {
@@ -105,10 +114,13 @@ export class Tile {
   }
 
   setOutlineColor(color: Color) {
+    console.error('Not implemented.');
+    /*
     this.outline.children.forEach((child) => {
       child.visible = true;
       child.fillColor = color;
     });
+    */
   }
 
   addUnit(unit: Unit) {

@@ -34,6 +34,8 @@ export class Engineer extends Unit {
         super();
         this.upkeepCost = 10;
 
+        console.error('Not implemented');
+        /*
         project.importSVG('assets/svg/unlicensed/Engineering.svg', (item: Item) => {
             this.icon = item;
             item.scale(2.5);
@@ -42,6 +44,7 @@ export class Engineer extends Unit {
             item.position = this.tile.group.position;
             unitGroup.addChild(item);
         });
+        */
     }
 
     buildRoad(roadHubInnerGroup: Group, roadHubOuterGroup: Group, roadInnerGroup: Group, roadOuterGroup: Group, tile: Tile) {

@@ -136,7 +136,9 @@ export class City extends Building {
         this.production = production;
     }
 
-    spawnEngineer(): Engineer {
+    spawnEngineer() {
+        console.error('Not implemented.');
+        /*
         const emptyTile = (this.tile.hasUnit() ? this.tile.neighbors.find(tile => Boolean(tile) && !tile.hasUnit()) : this.tile);
         if (emptyTile) {
             const engineer = this.owner.createEngineer();
@@ -144,6 +146,7 @@ export class City extends Building {
             return engineer;
         }
         return null;
+        */
     }
 }
 
