@@ -6,7 +6,7 @@ import { City } from '../classes/building';
 import { AI } from '../classes/ai';
 import { PlayerService } from '../player.service';
 import { Perlin } from '../perlin';
-import { Scene, Camera, OrthographicCamera, WebGLRenderer, Color, Mesh, MeshBasicMaterial, BoxBufferGeometry, DirectionalLight, MeshLambertMaterial, PerspectiveCamera, BoxGeometry, Geometry, Vector3, Face3, Vector2, TextureLoader } from 'three';
+import { Scene, Camera, OrthographicCamera, WebGLRenderer, Color, Mesh, MeshBasicMaterial, BoxBufferGeometry, DirectionalLight, MeshLambertMaterial, PerspectiveCamera, BoxGeometry, Geometry, Vector3, Face3, Vector2, TextureLoader, InstancedMesh, Matrix4 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Group, Layer, Point } from 'paper';
 import { HexagonGeometry, PentagonGeometry } from '../classes/hexagonGeometry';
@@ -72,7 +72,7 @@ export class GameComponent implements AfterViewInit {
     const mat = new MeshBasicMaterial({ color: 0x00ff00 });
     const cube = new Mesh(geo, mat);
     this.scene.add(cube);
-    this.camera.position.z = -10;
+    this.camera.position.z = -50;
 
 
     /*
@@ -740,20 +740,24 @@ export class GameComponent implements AfterViewInit {
         }));
       }
 
+      const hexagonBufferGeometry = new HexagonGeometry();
+      const oceanTiles = new InstancedMesh(hexagonBufferGeometry, oceanTextureMaterials[0], vertices.length - 12);
       for (let i = 12; i < vertices.length; i++) {
         // const geometry = new HexagonGeometry(13.4, 0);
-        const geometry = new HexagonGeometry();
+        // const geometry = new HexagonGeometry();
         // assignUVs(geometry);
         // const mesh = new Mesh(geometry, new MeshBasicMaterial({ color: Math.random() * 0xfffff }));
         // const customColor = new Color(`hsl(${hue}, 80%, 60%)`);
-        const deepOceanMaterial = oceanTextureMaterials[Math.floor(Math.random() * oceanTextureMaterials.length)];
-        const mat = (Math.random() >= 0.05) ? deepOceanMaterial : otherTextureMaterial;
-        const mesh = new Mesh(geometry, mat);
+        // const deepOceanMaterial = oceanTextureMaterials[Math.floor(Math.random() * oceanTextureMaterials.length)];
+        // const mat = (Math.random() >= 0.05) ? deepOceanMaterial : otherTextureMaterial;
+        // const mesh = new Mesh(geometry, mat);
 
         // const mesh = new Mesh(geometry, new MeshBasicMaterial({ color: 0xffffff }));
+        const matrix = new Matrix4();
+
         const position = vertices[i].clone();
-        const direction = vertices[i].clone().normalize();
-        mesh.position.set(position.x, position.y, position.z);
+        // const direction = vertices[i].clone().normalize();
+        // mesh.position.set(position.x, position.y, position.z);
         // direction.reflect(new Vector3(0, 0, 1));
         // mesh.up.set(direction.x, direction.y, direction.z);
 
@@ -792,22 +796,28 @@ export class GameComponent implements AfterViewInit {
         // );
         // Ignoring the height when setting this!!!!!!!!!!
         // Doesn't seem to be the issue - just floating point errors??
-        mesh.lookAt(faceTriadIntersection);
-
         const up = faceTriadIntersection.sub(position).normalize();
+        matrix.lookAt(position, faceTriadIntersection, up);
+        matrix.setPosition(position.x, position.y, position.z);
+
+        oceanTiles.setMatrixAt(i - 12, matrix);
+
+        // mesh.lookAt(faceTriadIntersection);
+
         // console.log('is this normalized???', up.length());
-        mesh.up.set(up.x, up.y, up.z);
+        // mesh.up.set(up.x, up.y, up.z);
         // console.log('intersection centahhhhhh', faceTriadIntersection);
 
         // console.log('curr up', mesh.up);
-        mesh.lookAt(new Vector3(0, 0, 0));
+        // mesh.lookAt(new Vector3(0, 0, 0));
 
         // up for hexagon can be center (with height removed) to any vertex
-        this.scene.add(mesh);
+        // this.scene.add(mesh);
       }
+      this.scene.add(oceanTiles);
     }
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 7; i++) {
       const newPlanet = subdividePlanet(allVertices, allVertexEdges, distanceToCenter);
       allVertices = newPlanet.vertices;
       allVertexEdges = newPlanet.vertexEdges;

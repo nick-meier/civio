@@ -7,7 +7,8 @@ export class HexagonGeometry extends BufferGeometry {
   static faceIndexes: number[];
 
   static initialize() {
-    const radius = .82;
+    // const radius = .82;
+    const radius = .2;
     const height = 0;
 
     const angle = 1.7320508075688767;
